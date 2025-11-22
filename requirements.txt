@@ -1,6 +1,16 @@
+# Upgrade pip to latest version
 pip>=25.3
+
+# Flask for web app
 Flask==2.3.3
-scikit-learn==1.7.2 --only-binary=:all:
-pandas==2.1.0 --only-binary=:all:
+
+# Machine learning
+scikit-learn==1.7.2
+
+# Data handling (choose latest available version)
+pandas==2.3.3
+
+# For NewsAPI requests
 requests==2.31.0
+
 
