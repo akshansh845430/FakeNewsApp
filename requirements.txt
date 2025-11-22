@@ -1,4 +1,13 @@
+# Upgrade pip first to avoid metadata errors
+pip>=25.3
+
+# Flask web framework
 Flask==2.3.3
+
+# Machine learning
 scikit-learn==1.7.2
-requests==2.31.0
 pandas==2.1.0
+
+# For NewsAPI requests
+requests==2.31.0
+
