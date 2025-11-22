@@ -1,14 +1,5 @@
-# Upgrade pip first to avoid build errors
 pip>=25.3
-
-# Flask for web framework
 Flask==2.3.3
-
-# Machine learning (use older precompiled wheel to avoid build issues)
-scikit-learn==1.6.2
-
-# Data handling
+scikit-learn==1.6.1
 pandas==2.1.0
-
-# For NewsAPI requests
 requests==2.31.0
