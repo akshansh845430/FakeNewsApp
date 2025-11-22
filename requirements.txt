@@ -1,5 +1,6 @@
 pip>=25.3
 Flask==2.3.3
-scikit-learn==1.6.1
-pandas==2.1.0
+scikit-learn==1.7.2 --only-binary=:all:
+pandas==2.1.0 --only-binary=:all:
 requests==2.31.0
+
