@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Fake News Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -182,6 +184,38 @@
             text-decoration: underline;
         }
 
+        /* ====== Media Queries for Mobile ====== */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            nav a {
+                font-size: 16px;
+                margin: 0 10px;
+                padding: 8px 12px;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                font-size: 16px;
+            }
+
+            button {
+                width: 100%;
+                font-size: 18px;
+                padding: 12px 0;
+            }
+
+            .result {
+                font-size: 22px;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -225,72 +259,54 @@
         const ctx = canvas.getContext('2d');
 
         let particlesArray;
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-      class Particle {
-    constructor(x, y, directionX, directionY, size, color){
-        this.x = x;
-        this.y = y;
-        this.directionX = directionX;
-        this.directionY = directionY;
-        this.size = size;
-        this.color = color;
-    }
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color){
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
 
-    draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
-        ctx.shadowColor = 'gold';       // ← glow color
-        ctx.shadowBlur = 30;            // ← blur amount for glow
-        ctx.fill();
-    }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = 'gold';
+                ctx.shadowBlur = 30;
+                ctx.fill();
+            }
 
-    update() {
-        if(this.x + this.size > canvas.width || this.x - this.size < 0){
-            this.directionX = -this.directionX;
+            update() {
+                if(this.x + this.size > canvas.width || this.x - this.size < 0){
+                    this.directionX = -this.directionX;
+                }
+                if(this.y + this.size > canvas.height || this.y - this.size < 0){
+                    this.directionY = -this.directionY;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
         }
-        if(this.y + this.size > canvas.height || this.y - this.size < 0){
-            this.directionY = -this.directionY;
+
+        function init() {
+            particlesArray = [];
+            const numberOfParticles = 100;
+            for(let i = 0; i < numberOfParticles; i++){
+                let size = Math.random() * 8 + 1;
+                let x = Math.random() * (canvas.width - size * 2) + size;
+                let y = Math.random() * (canvas.height - size * 2) + size;
+                let directionX = (Math.random() - 0.5) * 1.5;
+                let directionY = (Math.random() - 0.5) * 1.5;
+                let color = 'rgba(255, 0, 0, 0.8)';  // red particles
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
         }
-        this.x += this.directionX;
-        this.y += this.directionY;
-        this.draw();
-    }
-}
-
-// Initialize particles with golden color
-function init() {
-    particlesArray = [];
-    const numberOfParticles = 100;
-    for(let i = 0; i < numberOfParticles; i++){
-        let size = Math.random() * 8 + 1;
-        let x = Math.random() * (canvas.width - size * 2) + size;
-        let y = Math.random() * (canvas.height - size * 2) + size;
-        let directionX = (Math.random() - 0.5) * 1.5;
-        let directionY = (Math.random() - 0.5) * 1.5;
-        let color = 'rgba(255, 0, 0, 0.8)';  // red particle
-particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
-
-    }
-}
-
-
-        // function init() {
-        //     particlesArray = [];
-        //     const numberOfParticles = 100;
-        //     for(let i = 0; i < numberOfParticles; i++){
-        //         let size = Math.random() * 3 + 1;
-        //         let x = Math.random() * (canvas.width - size * 2) + size;
-        //         let y = Math.random() * (canvas.height - size * 2) + size;
-        //         let directionX = (Math.random() - 0.5) * 1.5;
-        //         let directionY = (Math.random() - 0.5) * 1.5;
-        //         let color = 'rgba(255,255,255,0.8)';
-        //         particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
-        //     }
-        // }
 
         function animate() {
             requestAnimationFrame(animate);
