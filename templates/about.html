@@ -20,7 +20,7 @@
             overflow: hidden;
         }
 
-        /* Overlay for better readability */
+        /* Overlay for readability */
         body::before {
             content: "";
             position: absolute;
@@ -109,6 +109,22 @@
             color: #000;
             transform: scale(1.05);
         }
+
+        /* Responsive for mobile */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+            .content {
+                padding: 20px;
+                font-size: 18px;
+            }
+            nav a {
+                font-size: 16px;
+                margin: 0 10px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -125,9 +141,9 @@
 
     <!-- Content -->
     <div class="content">
-        <p>This Fake News Detection System is a **simple ML-based web app** built using **Python and Flask**. It uses a trained machine learning model to classify news headlines as **Real** or **Fake**.  
-        Additionally, it can verify headlines against recent news using **NewsAPI** to provide more accurate results.</p>
-        <p>The purpose of this app is to educate users on identifying fake news and provide a **fun and interactive demonstration of machine learning in action**.</p>
+        <p>This Fake News Detection System is a <strong>simple ML-based web app</strong> built using <strong>Python and Flask</strong>. It uses a trained machine learning model to classify news headlines as <strong>Real</strong> or <strong>Fake</strong>.</p>
+        <p>Additionally, it can verify headlines against recent news using <strong>NewsAPI</strong> to provide more accurate results.</p>
+        <p>The purpose of this app is to educate users on identifying fake news and provide a <strong>fun and interactive demonstration of machine learning in action</strong>.</p>
     </div>
 
     <footer>
