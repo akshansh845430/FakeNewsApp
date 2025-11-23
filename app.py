@@ -24,38 +24,33 @@ app = Flask(__name__)
 # -------------------------
 
 def analyze_news_headline(headline):
-
-    # Clean the text and extract important keywords
     cleaned = re.sub(r'[^a-zA-Z ]', '', headline).lower()
     keywords = [word for word in cleaned.split() if word not in ENGLISH_STOP_WORDS]
 
-    # If after cleaning no keywords remain, fall back to model
     if not keywords:
         prediction = model.predict([headline])[0]
-        return "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
+        return f"ML Model Only: {'Real' if prediction == 1 else 'Fake'} 🤖 (No keywords for API)"
 
-    # Convert list into NewsAPI compatible query
-    query = "+".join(keywords[:5])  # limit to top 5 keywords
-
+    query = "+".join(keywords[:5])
     api_url = f"https://newsapi.org/v2/everything?q={query}&language=en&apiKey={NEWSAPI_KEY}"
 
     try:
         response = requests.get(api_url, timeout=5).json()
+        
+        if response.get("status") != "ok":
+            return f"API Error: {response.get('message', 'Unknown')} → falling back to ML"
+
         articles = response.get("articles", [])
 
-        # --- If NewsAPI found related published news ---
         if len(articles) > 0:
-            return "Real News (Verified via NewsAPI) ✅"
+            return f"Real News (Verified via NewsAPI) ✅ → {len(articles)} articles found"
 
-        # --- Else: Use Machine Learning Model ---
         prediction = model.predict([headline])[0]
-        return "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
+        return f"ML Prediction Only: {'Real' if prediction == 1 else 'Fake'} 🤖 (API returned 0 articles)"
 
-    except Exception:
-        # If API fails, fallback safely to ML only
+    except Exception as e:
         prediction = model.predict([headline])[0]
-        return "Real News (ML Model Fallback) 🤖" if prediction == 1 else "Fake News (ML Model Fallback) ❌"
-
+        return f"ML Prediction Only: {'Real' if prediction == 1 else 'Fake'} 🤖 (API request failed: {e})"
 
 
 # -------------------------
