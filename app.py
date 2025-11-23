@@ -14,7 +14,7 @@ from datetime import datetime
 # -------------------------
 model = pickle.load(open("model.pkl", "rb"))
 
-NEWSAPI_KEY = "pub_f0a3a4f603f4482f82c5f71d5473cbd5"
+NEWSAPI_KEY = "036cf1fb384a4f7abd309081805851f8"
 
 app = Flask(__name__)
 
