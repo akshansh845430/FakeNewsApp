@@ -27,16 +27,32 @@ def analyze_news_headline(headline):
 
         # --- If NewsAPI found related published news ---
         if len(articles) > 0:
-            return "Real News (Verified via NewsAPI) ✅"
-        
+            return {
+                "status": "real",
+                "source": "API",
+                "message": "This headline was found in verified online news sources.",
+                "final_label": "Real News (Verified via NewsAPI) ✅"
+            }
+
         # --- Else: Use Machine Learning Model ---
         prediction = model.predict([headline])[0]
-        return "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
+        return {
+            "status": "real" if prediction == 1 else "fake",
+            "source": "ML",
+            "message": "Not found in NewsAPI — using trained AI model:",
+            "final_label": "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
+        }
 
     except Exception:
-        # If API fails, fallback safely to ML only
+        # If API fails, fallback to ML prediction only
         prediction = model.predict([headline])[0]
-        return "Real News (ML Model Fallback) 🤖" if prediction == 1 else "Fake News (ML Model Fallback) ❌"
+        return {
+            "status": "real" if prediction == 1 else "fake",
+            "source": "ML-Fallback",
+            "message": "Couldn't connect to NewsAPI — using ML fallback:",
+            "final_label": "Real News (ML Model Fallback) 🤖" if prediction == 1 else "Fake News (ML Model Fallback) ❌"
+        }
+
 
 
 # -------------------------
@@ -48,9 +64,10 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    text = request.form.get("news", "").strip()
-    result = analyze_news_headline(text)
-    return render_template("index.html", result=result)
+    text = request.form["news"]
+    result_info = analyze_news_headline(text)
+    return render_template("index.html", result=result_info)
+
 
 @app.route("/about")
 def about():
