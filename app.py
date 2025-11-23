@@ -1,3 +1,7 @@
+import re
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
+
 import os
 from flask import Flask, render_template, request, redirect, url_for
 import pickle
@@ -18,8 +22,22 @@ app = Flask(__name__)
 # Function: Step 1 → Check News API
 # Step 2 → If no match, use ML model
 # -------------------------
+
 def analyze_news_headline(headline):
-    api_url = f"https://newsapi.org/v2/everything?q={headline}&language=en&apiKey={NEWSAPI_KEY}"
+
+    # Clean the text and extract important keywords
+    cleaned = re.sub(r'[^a-zA-Z ]', '', headline).lower()
+    keywords = [word for word in cleaned.split() if word not in ENGLISH_STOP_WORDS]
+
+    # If after cleaning no keywords remain, fall back to model
+    if not keywords:
+        prediction = model.predict([headline])[0]
+        return "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
+
+    # Convert list into NewsAPI compatible query
+    query = "+".join(keywords[:5])  # limit to top 5 keywords
+
+    api_url = f"https://newsapi.org/v2/everything?q={query}&language=en&apiKey={NEWSAPI_KEY}"
 
     try:
         response = requests.get(api_url, timeout=5).json()
@@ -27,31 +45,16 @@ def analyze_news_headline(headline):
 
         # --- If NewsAPI found related published news ---
         if len(articles) > 0:
-            return {
-                "status": "real",
-                "source": "API",
-                "message": "This headline was found in verified online news sources.",
-                "final_label": "Real News (Verified via NewsAPI) ✅"
-            }
+            return "Real News (Verified via NewsAPI) ✅"
 
         # --- Else: Use Machine Learning Model ---
         prediction = model.predict([headline])[0]
-        return {
-            "status": "real" if prediction == 1 else "fake",
-            "source": "ML",
-            "message": "Not found in NewsAPI — using trained AI model:",
-            "final_label": "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
-        }
+        return "Real News (ML Model) 🤖" if prediction == 1 else "Fake News (ML Model) ❌"
 
     except Exception:
-        # If API fails, fallback to ML prediction only
+        # If API fails, fallback safely to ML only
         prediction = model.predict([headline])[0]
-        return {
-            "status": "real" if prediction == 1 else "fake",
-            "source": "ML-Fallback",
-            "message": "Couldn't connect to NewsAPI — using ML fallback:",
-            "final_label": "Real News (ML Model Fallback) 🤖" if prediction == 1 else "Fake News (ML Model Fallback) ❌"
-        }
+        return "Real News (ML Model Fallback) 🤖" if prediction == 1 else "Fake News (ML Model Fallback) ❌"
 
 
 
