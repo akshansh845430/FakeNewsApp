@@ -29,7 +29,7 @@ def analyze_news_headline(headline):
 
     if not keywords:
         prediction = model.predict([headline])[0]
-        return f"ML Model Only: {'Real' if prediction == 1 else 'Fake'} 🤖 (No keywords for API)"
+        return f"API: Not enough keywords to query → ML Prediction: {'Real' if prediction == 1 else 'Fake'} 🤖"
 
     query = "+".join(keywords[:5])
     api_url = f"https://newsapi.org/v2/everything?q={query}&language=en&apiKey={NEWSAPI_KEY}"
@@ -38,20 +38,21 @@ def analyze_news_headline(headline):
         response = requests.get(api_url, timeout=5).json()
         
         if response.get("status") != "ok":
-            return f"API Error: {response.get('message', 'Unknown')} → falling back to ML"
+            prediction = model.predict([headline])[0]
+            return f"API Error: {response.get('message', 'Unknown')} → ML Prediction: {'Real' if prediction == 1 else 'Fake'} 🤖"
 
         articles = response.get("articles", [])
 
         if len(articles) > 0:
-            return f"Real News (Verified via NewsAPI) ✅ → {len(articles)} articles found"
+            return f"API: Found {len(articles)} article(s) → Real News ✅"
 
+        # API returned 0 articles → fallback to ML
         prediction = model.predict([headline])[0]
-        return f"ML Prediction Only: {'Real' if prediction == 1 else 'Fake'} 🤖 (API returned 0 articles)"
+        return f"API: No articles found → ML Prediction: {'Real' if prediction == 1 else 'Fake'} 🤖"
 
     except Exception as e:
         prediction = model.predict([headline])[0]
-        return f"ML Prediction Only: {'Real' if prediction == 1 else 'Fake'} 🤖 (API request failed: {e})"
-
+        return f"API Request Failed: {e} → ML Prediction: {'Real' if prediction == 1 else 'Fake'} 🤖"
 
 # -------------------------
 # Routes
